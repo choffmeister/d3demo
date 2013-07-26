@@ -1,8 +1,10 @@
 $(function () {
-	var data1 = [];
-	for (var d = 0.0; d <= 6.28; d += 0.1) data1.push({ X: d, Y: Math.cos(d) });
-	var data2 = [];
-	for (var d = 0.0; d <= 6.28; d += 0.1) data2.push({ X: d, Y: Math.sin(d) });
+	data1 = _.range(0.0, Math.PI * 2.0, 0.1).map(function (d) {
+		return { X: d, Y: Math.cos(d) };
+	});
+	data2 = _.range(0.0, Math.PI * 2.0, 0.1).map(function (d) {
+		return { X: d, Y: Math.sin(d) };
+	});
 
 	var svg = d3.select("#canvas")
 		.append("svg");
