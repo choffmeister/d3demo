@@ -1,9 +1,8 @@
 $(function () {
-	data1 = _.range(0.0, Math.PI * 2.0, 0.1).map(function (d) {
+	data1 = _.range(-1.1, 1.1, 0.1).map(function (d) {
 		return { X: d, Y: Math.abs(d) <= 1.0 ? Math.sqrt(1 - d*d) : null };
 	});
-	console.log(data1);
-	data2 = _.range(0.0, Math.PI * 2.0, 0.1).map(function (d) {
+	data2 = _.range(-Math.PI, Math.PI, 0.1).map(function (d) {
 		return { X: d, Y: Math.sin(d) };
 	});
 
@@ -15,6 +14,9 @@ $(function () {
 
 	var scaleX = d3.scale.linear().domain(domainX);
 	var scaleY = d3.scale.linear().domain(domainY);
+
+	var axisX = d3.svg.axis().scale(scaleX).orient("bottom");
+	var axisY = d3.svg.axis().scale(scaleY).orient("left");
 
 	function resize() {
 		var width = $("#canvas").width();
@@ -28,7 +30,7 @@ $(function () {
 	$(window).resize(resize);
 	resize();
 
-	function draw(name, data, trigger) {
+	function drawData(name, data, trigger) {
 		var circles = svg.selectAll("circle." + name).data(_.filter(data, function (d) { return d.Y != null; }));
 		circles.enter()
 			.append("circle")
@@ -51,9 +53,24 @@ $(function () {
 			.remove();
 	};
 
+	function drawAxes() {
+		svg.select("g.axis").remove();
+		svg
+			.append("g")
+			.attr("class", "axis axis-x")
+			.attr("transform", "translate(0," + scaleY(0) + ")")
+			.call(axisX);
+		svg
+			.append("g")
+			.attr("class", "axis axis-y")
+			.attr("transform", "translate(" + scaleX(0) + ",0)")
+			.call(axisY);
+	}
+
 	function drawAll(trigger) {
-		draw("cos", data1, trigger);
-		draw("sin", data2, trigger);
+		drawData("cos", data1, trigger);
+		drawData("sin", data2, trigger);
+		drawAxes();
 	};
 
 	alterData = function () {
