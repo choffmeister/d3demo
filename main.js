@@ -18,6 +18,9 @@ $(function () {
 	var axisX = d3.svg.axis().scale(scaleX).orient("bottom");
 	var axisY = d3.svg.axis().scale(scaleY).orient("left");
 
+	var axisLayer = svg.append("g");
+	var dataLayer = svg.append("g");
+
 	function resize() {
 		var width = $("#canvas").width();
 		var height = $("#canvas").height();
@@ -31,12 +34,21 @@ $(function () {
 	resize();
 
 	function drawData(name, data, trigger) {
-		var circles = svg.selectAll("circle." + name).data(_.filter(data, function (d) { return d.Y != null; }));
+		var circles = dataLayer.selectAll("circle." + name).data(_.filter(data, function (d) { return d.Y != null; }));
 		circles.enter()
 			.append("circle")
 			.attr("class", name)
 			.attr("r", 4)
-			.attr("fill", "green");
+			.attr("fill", "green")
+			.each(function (d, i) {
+				var numberFormatter = d3.format(".2f");
+
+				$(this).tooltip({
+					title: "X: " + numberFormatter(d.X) + "<br/>" + "Y: " + numberFormatter(d.Y),
+					html: true,
+					container: "#tooltip-layer"
+				});
+			});
 
 		circles
 			.transition()
@@ -54,13 +66,13 @@ $(function () {
 	};
 
 	function drawAxes() {
-		svg.select("g.axis").remove();
-		svg
+		axisLayer.select("g.axis").remove();
+		axisLayer
 			.append("g")
 			.attr("class", "axis axis-x")
 			.attr("transform", "translate(0," + scaleY(0) + ")")
 			.call(axisX);
-		svg
+		axisLayer
 			.append("g")
 			.attr("class", "axis axis-y")
 			.attr("transform", "translate(" + scaleX(0) + ",0)")
