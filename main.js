@@ -12,10 +12,22 @@ $(function () {
 	var domainX = d3.extent(data1, function (d) { return d.X; });
 	var domainY = d3.extent(data1, function (d) { return d.Y; });
 
-	var scaleX = d3.scale.linear().domain(domainX).range([10, 1000]);
-	var scaleY = d3.scale.linear().domain(domainY).range([600, 10]);
+	var scaleX = d3.scale.linear().domain(domainX);
+	var scaleY = d3.scale.linear().domain(domainY);
 
-	function draw(name, data) {
+	function resize() {
+		var width = $("#canvas").width();
+		var height = $("#canvas").height();
+
+		svg.attr("width", width).attr("height", height);
+		scaleX = scaleX.range([10, width - 10]);
+		scaleY = scaleY.range([height - 10, 10]);
+		drawAll("resized");
+	}
+	$(window).resize(resize);
+	resize();
+
+	function draw(name, data, trigger) {
 		var circles = svg.selectAll("circle." + name).data(data);
 		circles.enter()
 			.append("circle")
@@ -26,7 +38,7 @@ $(function () {
 		circles
 			.transition()
 			.ease("bounce")
-			.duration(500)
+			.duration(trigger == "resized" ? 0 : 5000)
 			.attr("cx", function (d, i) {
 				return scaleX(d.X);
 			})
@@ -38,9 +50,9 @@ $(function () {
 			.remove();
 	};
 
-	function drawAll() {
-		draw("cos", data1);
-		draw("sin", data2);
+	function drawAll(trigger) {
+		draw("cos", data1, trigger);
+		draw("sin", data2, trigger);
 	};
 
 	alterData = function () {
@@ -48,7 +60,7 @@ $(function () {
 			data1[i].Y *= -1;
 		}
 		drawAll();
-		setTimeout(alterData, 1000);
 	};
-	alterData();
+
+	setTimeout(alterData, 1000);
 });
