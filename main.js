@@ -1,7 +1,8 @@
 $(function () {
 	data1 = _.range(0.0, Math.PI * 2.0, 0.1).map(function (d) {
-		return { X: d, Y: Math.cos(d) };
+		return { X: d, Y: Math.abs(d) <= 1.0 ? Math.sqrt(1 - d*d) : null };
 	});
+	console.log(data1);
 	data2 = _.range(0.0, Math.PI * 2.0, 0.1).map(function (d) {
 		return { X: d, Y: Math.sin(d) };
 	});
@@ -9,8 +10,8 @@ $(function () {
 	var svg = d3.select("#canvas")
 		.append("svg");
 
-	var domainX = d3.extent(data1, function (d) { return d.X; });
-	var domainY = d3.extent(data1, function (d) { return d.Y; });
+	var domainX = d3.extent(data2, function (d) { return d.X; });
+	var domainY = d3.extent(data2, function (d) { return d.Y; });
 
 	var scaleX = d3.scale.linear().domain(domainX);
 	var scaleY = d3.scale.linear().domain(domainY);
@@ -28,7 +29,7 @@ $(function () {
 	resize();
 
 	function draw(name, data, trigger) {
-		var circles = svg.selectAll("circle." + name).data(data);
+		var circles = svg.selectAll("circle." + name).data(_.filter(data, function (d) { return d.Y != null; }));
 		circles.enter()
 			.append("circle")
 			.attr("class", name)
@@ -57,7 +58,7 @@ $(function () {
 
 	alterData = function () {
 		for (var i = 0; i < data1.length; i++) {
-			data1[i].Y *= -1;
+			if (data1[i].Y != null) data1[i].Y *= -1;
 		}
 		drawAll();
 	};
