@@ -1,0 +1,15 @@
+{
+  "name": "d3demo",
+  "version": "0.0.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "~3.2.7",
+    "jquery": "~2.0.3"
+  }
+}
